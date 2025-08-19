@@ -18,10 +18,10 @@ export interface ComponentProperties {
   fontSize?: number;
   fontWeight?: '400' | '700';
   color?: string;
-  
+
   // TextArea component properties
   textAlign?: 'left' | 'center' | 'right';
-  
+
   // Image component properties
   imageUrl?: string;
   altText?: string;
@@ -29,14 +29,14 @@ export interface ComponentProperties {
   borderRadius?: number;
   height?: number;
   width?: number;
-  
+
   // Button component properties
   url?: string;
   buttonText?: string;
   padding?: number;
   backgroundColor?: string;
   textColor?: string;
-  
+
   // Common properties
   content?: string;
 }

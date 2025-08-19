@@ -16,8 +16,10 @@ const ComponentWrapper = styled.div<{
   user-select: none;
   
   ${props => props.isSelected && `
-    outline: 2px solid #007bff;
+    outline: 2px solid var(--brand);
     outline-offset: 2px;
+    box-shadow: 0 4px 16px rgba(79,70,229,0.12);
+    border-radius: 8px;
   `}
 `;
 
@@ -66,6 +68,7 @@ const TextComponent = styled.div<{ fontSize: number; fontWeight: string; color: 
   background: rgba(255, 255, 255, 0.9);
   border-radius: 4px;
 `;
+
 
 const TextAreaComponent = styled.div<{ fontSize: number; color: string; textAlign: string }>`
   font-size: ${props => props.fontSize}px;

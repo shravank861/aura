@@ -22,6 +22,9 @@ export const GlobalStyle = createGlobalStyle`
                 radial-gradient(700px 400px at 90% -30%, #e9f9ff 0%, transparent 45%),
                 var(--bg);
     color: var(--text);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+      sans-serif;
   }
 
   ::-webkit-scrollbar {

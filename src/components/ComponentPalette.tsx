@@ -101,25 +101,25 @@ const ComponentPalette: React.FC<ComponentPaletteProps> = ({ onAddComponent }) =
       type: 'text' as ComponentType,
       label: 'Text',
       icon: 'T',
-      description: 'Add text content with customizable styling'
+      description: 'Single-line text'
     },
     {
       type: 'textarea' as ComponentType,
       label: 'Text Area',
       icon: '¶',
-      description: 'Add multi-line text with alignment options'
+      description: 'Paragraph text'
     },
     {
       type: 'image' as ComponentType,
       label: 'Image',
       icon: '🖼',
-      description: 'Add images with size and fit controls'
+      description: 'Image'
     },
     {
       type: 'button' as ComponentType,
       label: 'Button',
       icon: '🔘',
-      description: 'Add clickable buttons with custom styling'
+      description: 'Button'
     }
   ];
 
@@ -135,8 +135,8 @@ const ComponentPalette: React.FC<ComponentPaletteProps> = ({ onAddComponent }) =
   return (
     <PaletteContainer>
       <PaletteHeader>
-        <PaletteTitle>Components</PaletteTitle>
-        <Badge>Drag to Canvas</Badge>
+        <PaletteTitle>Blocks</PaletteTitle>
+        <Badge>Drag onto canvas</Badge>
       </PaletteHeader>
       {paletteItems.map((item) => (
         <ComponentItem

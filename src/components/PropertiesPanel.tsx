@@ -4,17 +4,18 @@ import { ComponentData, ComponentProperties } from '../types';
 
 const PropertiesContainer = styled.div`
   width: 20%;
-  background-color: white;
-  border-left: 1px solid #dee2e6;
-  padding: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+  border-left: 1px solid var(--panelBorder);
+  padding: 24px 16px;
   overflow-y: auto;
 `;
 
 const PropertiesTitle = styled.h3`
-  margin: 0 0 20px 0;
-  color: #495057;
-  font-size: 18px;
-  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
 `;
 
 const NoSelectionMessage = styled.div`
@@ -25,43 +26,46 @@ const NoSelectionMessage = styled.div`
 `;
 
 const PropertyGroup = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 `;
 
 const PropertyLabel = styled.label`
   display: block;
   margin-bottom: 8px;
-  color: #495057;
-  font-weight: 500;
-  font-size: 14px;
+  color: #111827;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
 `;
 
 const PropertyInput = styled.input`
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--panelBorder);
+  border-radius: 10px;
   font-size: 14px;
+  background: #ffffff;
   
   &:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
   }
 `;
 
 const PropertySelect = styled.select`
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--panelBorder);
+  border-radius: 10px;
   font-size: 14px;
-  background: white;
+  background: #ffffff;
   
   &:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
   }
 `;
 
@@ -72,14 +76,16 @@ const PropertySlider = styled.input`
 
 const ColorInput = styled.input`
   width: 100%;
-  height: 40px;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
+  height: 44px;
+  border: 1px solid var(--panelBorder);
+  border-radius: 10px;
   cursor: pointer;
+  background: #ffffff;
   
   &:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
   }
 `;
 
@@ -138,7 +144,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
       <PropertiesContainer>
         <PropertiesTitle>Properties</PropertiesTitle>
         <NoSelectionMessage>
-          Select a component to edit its properties
+          Select a block to edit its settings
         </NoSelectionMessage>
       </PropertiesContainer>
     );
@@ -203,6 +209,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
       </PropertyGroup>
     </>
   );
+
 
   const renderTextAreaProperties = () => (
     <>
@@ -439,6 +446,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
       </PropertyGroup>
     </>
   );
+
 
   const renderProperties = () => {
     switch (selectedComponent.type) {

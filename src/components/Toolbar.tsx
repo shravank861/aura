@@ -9,13 +9,15 @@ const ToolbarContainer = styled.div`
   left: 0;
   right: 0;
   height: 60px;
-  background: white;
-  border-bottom: 1px solid #dee2e6;
+  background: rgba(255,255,255,0.7);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--panelBorder);
   display: flex;
   align-items: center;
   padding: 0 20px;
   z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 16px rgba(15, 23, 42, 0.06);
 `;
 
 const ToolbarGroup = styled.div`
@@ -26,34 +28,34 @@ const ToolbarGroup = styled.div`
 `;
 
 const ToolbarButton = styled.button<{ disabled?: boolean }>`
-  padding: 8px 16px;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
-  background: white;
-  color: #495057;
+  padding: 10px 14px;
+  border: 1px solid var(--panelBorder);
+  border-radius: 10px;
+  background: #ffffff;
+  color: #111827;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   font-size: 14px;
   transition: all 0.2s ease;
   opacity: ${props => props.disabled ? 0.5 : 1};
   
   &:hover:not(:disabled) {
-    background: #f8f9fa;
-    border-color: #adb5bd;
+    background: #f9fafb;
+    border-color: var(--brand);
   }
   
   &:active:not(:disabled) {
-    background: #e9ecef;
+    background: #eef2ff;
   }
 `;
 
 const PrimaryButton = styled(ToolbarButton)`
-  background: #007bff;
+  background: var(--brand);
   color: white;
-  border-color: #007bff;
+  border-color: var(--brand);
   
   &:hover:not(:disabled) {
-    background: #0056b3;
-    border-color: #0056b3;
+    background: var(--brandDark);
+    border-color: var(--brandDark);
   }
 `;
 
@@ -159,7 +161,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <>
       <ToolbarContainer>
-        <ProjectTitle>Aura - No-Code Content Editor</ProjectTitle>
+        <ProjectTitle>Aura Editor</ProjectTitle>
         
         <ToolbarGroup>
           <ToolbarButton disabled={!canUndo} onClick={onUndo}>
@@ -173,12 +175,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
         <Separator />
         
         <ToolbarGroup>
-          <PrimaryButton onClick={() => setShowPreview(true)}>
-            👁 Preview
-          </PrimaryButton>
-          <ToolbarButton onClick={copyHTMLToClipboard}>
-            📋 Copy HTML
-          </ToolbarButton>
+          <PrimaryButton onClick={() => setShowPreview(true)}>Preview</PrimaryButton>
+          <ToolbarButton onClick={copyHTMLToClipboard}>Copy HTML</ToolbarButton>
         </ToolbarGroup>
       </ToolbarContainer>
       

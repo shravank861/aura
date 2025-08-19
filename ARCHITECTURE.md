@@ -497,3 +497,142 @@ The Aura No-Code Content Editor architecture is designed to be:
 - **Reliable** for production use
 
 The architecture balances current requirements with future extensibility, providing a solid foundation for the no-code editor while maintaining the flexibility to evolve with business needs.
+
+## Detailed Architecture Addendum
+
+### Chosen Architectural Pattern and Rationale
+
+- Pattern: Component-based architecture with unidirectional data flow (MVU-like)
+  - Why it fits: The editor is naturally composed of discrete, reusable units (palette, canvas, properties) that coordinate around a single source of truth (the canvas state). Unidirectional flow keeps interactions predictable and debuggable.
+  - Alternatives considered:
+    - MVC: Adds controller indirection that isn’t necessary in modern React; event handlers colocated with components are simpler.
+    - Flux/Redux: Good for very large apps, but adds boilerplate and indirection not required here; React + custom hooks suffice.
+    - Micro-frontends: Not applicable at this scale; would complicate local development and integration.
+
+Key properties of the selected pattern:
+- Clear boundaries: Palette (creation), Canvas (interaction), Properties (editing), Toolbar (global actions)
+- Single source of truth for components: `NoCodeEditor` holds the state and passes props down.
+- Event-driven updates: User actions raise events that update state in one place, keeping business logic centralized and testable.
+
+### Components and Communication Flow (Diagram)
+
+```mermaid
+flowchart LR
+  subgraph App[App]
+    NCE[NoCodeEditor (State Owner)]
+    PAL[ComponentPalette]
+    CAN[Canvas]
+    PRP[PropertiesPanel]
+    TLB[Toolbar]
+  end
+
+  PAL -- add(type) --> NCE
+  CAN -- drop(type, x, y) --> NCE
+  PRP -- update(id, props) --> NCE
+  CAN -- move(id, position) --> NCE
+  TLB -- undo()/redo() --> NCE
+
+  NCE -- components[], selected --> CAN
+  NCE -- selected --> PRP
+  NCE -- canUndo/canRedo --> TLB
+```
+
+Data lifecycle:
+- Creation: Palette drag/drop or click triggers creation via NoCodeEditor.
+- Selection: Clicking a block on the canvas sets `selectedComponent` in NoCodeEditor.
+- Editing: PropertiesPanel mutates the selected block’s props; updates flow into the canvas rendering immediately.
+- Movement: Canvas emits position updates via native mouse events; NoCodeEditor updates state and history.
+- Global actions: Toolbar invokes undo/redo, preview, copy HTML.
+
+### Technology Justification
+
+- React (with TypeScript)
+  - Why: Best-in-class for component architecture, state colocation, and reactivity; TypeScript improves correctness and maintainability.
+  - Alternatives: Vue (also viable), Svelte (small and fast) — React chosen for team familiarity, ecosystem maturity, and strong TS support.
+
+- styled-components
+  - Why: Co-locates styles with components, enables dynamic styles based on props, avoids global CSS conflicts, theme-ready.
+  - Alternatives: CSS Modules (less dynamic), Tailwind (utility-first, but adds class noise). styled-components fits the design system and TS props pattern.
+
+- No drag-and-drop library (native events only)
+  - Why: Hard requirement; gives full control over freeform movement and snap-to-grid behavior without hidden abstractions.
+  - Alternatives (prohibited here): react-dnd, interact.js, konva.js.
+
+- LocalStorage for persistence
+  - Why: Explicit requirement to avoid backend; provides simple, reliable persistence between sessions.
+  - Alternatives: IndexedDB (overkill for the data size), remote APIs (out of scope).
+
+- Create React App + react-scripts
+  - Why: Fast bootstrapping with built-in TS and testing; zero-config for this assignment.
+  - Alternatives: Vite (faster dev builds), Next.js (routing/SSR not required).
+
+Trade-offs acknowledged:
+- CRA has older Webpack stack; acceptable given scope. We kept code portable to migrate to Vite later if desired.
+
+### State Management Strategy — Why This Approach
+
+- Single source of truth in `NoCodeEditor` (array of `ComponentData` + `selectedComponent`):
+  - Predictability: All edits converge in one place, simplifying undo/redo and persistence.
+  - Testability: Pure updates enable straightforward unit tests.
+  - Simplicity: Avoids unnecessary global stores and wiring for a focused editor.
+
+- Custom hooks
+  - `useLocalStorage<T>`: Minimal persistence wrapper; replaces boilerplate.
+  - `useHistory` (50-step limit): Encapsulates undo/redo logic without leaking to UI components.
+
+- Why not Redux/Zustand/MobX?
+  - Adds cognitive overhead and boilerplate; current state shape is small and stable.
+  - History management is simpler with immutable snapshots for this data size.
+
+- Snapshot vs. Command pattern for history
+  - Chosen: Snapshot (copy of components array on each committed change)
+    - Pros: Simple, reliable, easy to reason about and serialize.
+    - Cons: More memory than command logs, but acceptable at <50 steps with small payloads.
+  - Considered: Command pattern
+    - Pros: Memory efficient; Cons: Significant complexity for reliable inverse operations across heterogeneous actions.
+
+History policy:
+- What goes into history: any committed user action (add/remove, position change, property change)
+- Cap: 50 states (rolling window)
+- Behavior: undo/redo mutations are side-effect free (except persistence), then rendered by React from latest state.
+
+### Component Structure — Why This Layout
+
+- Three-panel layout (20/60/20)
+  - Familiar mental model used by professional design tools (e.g., BEE Free, Figma variants).
+  - Minimizes context switching: resources (left), work area (center), configuration (right).
+
+- Responsibilities
+  - Palette: discovery and creation only; stateless aside from drag feedback.
+  - Canvas: freeform positioning and selection; no state ownership beyond transient drag offsets.
+  - Properties: type-specific editors; dispatches mutations via callbacks.
+  - Toolbar: global actions (undo/redo/preview/copy) and project identity.
+
+### Undo/Redo — Rationale and Guarantees
+
+- 50-step snapshot stack via `useHistory`
+  - Guarantees consistent restoration of entire canvas, including selection cleared upon restore (avoids stale references).
+  - Each mutation produces a new immutable array; updates are structural sharing-friendly in modern JS engines.
+- Performance expectations
+  - Arrays are small (dozens, not thousands). Snapshot copying cost is negligible versus user interaction latency.
+  - React batching further reduces re-renders.
+
+### Constraints Compliance and Interactions
+
+- Drag/move implemented with native events (`mousedown`/`mousemove`/`mouseup`) — no prohibited libraries used.
+- Persistence is `localStorage` only; no network or backend code.
+- Preview/Copy HTML is generated directly from the canonical state; positions are absolute for WYSIWYG fidelity.
+  - Mobile/Desktop preview: supported via modal frame sizes; export remains consistent.
+
+### Future Extensions (Non-Goals Today, Designed For Later)
+
+- Component library growth: new block types can be added by extending:
+  - `ComponentType`, default properties, renderer, and property editor
+  - No need to change the state container shape
+- Theming: promote current CSS variables to a theme provider
+- Collaboration: add presence and CRDT/OT layer on top of current state model
+- Persistence: replace `localStorage` with a repository abstraction; supports swapping to REST/GraphQL later
+
+### Summary
+
+This design keeps the editor intuitive and robust by combining a clear component hierarchy, centralized state, and simple, proven interaction patterns. It satisfies the assignment’s constraints (native DnD, localStorage persistence) while remaining easy to extend, test, and maintain.

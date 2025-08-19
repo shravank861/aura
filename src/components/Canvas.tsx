@@ -101,8 +101,11 @@ const Canvas: React.FC<CanvasProps> = ({
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (isDragging && draggedComponent && canvasRef.current) {
       const rect = canvasRef.current.getBoundingClientRect();
-      const newX = e.clientX - rect.left - dragOffset.x;
-      const newY = e.clientY - rect.top - dragOffset.y;
+      const rawX = e.clientX - rect.left - dragOffset.x;
+      const rawY = e.clientY - rect.top - dragOffset.y;
+      // Snap to 8px grid
+      const newX = Math.round(rawX / 8) * 8;
+      const newY = Math.round(rawY / 8) * 8;
       
       onUpdateComponent(draggedComponent.id, {
         position: { x: newX, y: newY }
