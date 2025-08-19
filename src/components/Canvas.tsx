@@ -180,6 +180,7 @@ const Canvas: React.FC<CanvasProps> = ({
         components={components}
       />
       <CanvasArea
+        data-testid="canvas"
         ref={canvasRef}
         onDragOver={handleDragOver}
         onDrop={handleDrop}

@@ -164,10 +164,10 @@ const Toolbar: React.FC<ToolbarProps> = ({
         <ProjectTitle>Aura Editor</ProjectTitle>
         
         <ToolbarGroup>
-          <ToolbarButton disabled={!canUndo} onClick={onUndo}>
+          <ToolbarButton data-testid="undo-button" disabled={!canUndo} onClick={onUndo}>
             ↩ Undo
           </ToolbarButton>
-          <ToolbarButton disabled={!canRedo} onClick={onRedo}>
+          <ToolbarButton data-testid="redo-button" disabled={!canRedo} onClick={onRedo}>
             ↪ Redo
           </ToolbarButton>
         </ToolbarGroup>
